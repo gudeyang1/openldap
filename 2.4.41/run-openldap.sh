@@ -62,6 +62,8 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
 
         # configure refint module
         ldapadd -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/configure_refint.ldif -d $OPENLDAP_DEBUG_LEVEL
+	# configure acl allow user change password
+	ldapmodify -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/acl.ldif -d $OPENLDAP_DEBUG_LEVEL
 
         # extract dc name from root DN suffix
         dc_name=$(echo "${OPENLDAP_ROOT_DN_SUFFIX}" | grep -Po "(?<=^dc\=)[\w\d]+")
@@ -121,4 +123,4 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
 fi
 
 # Start the slapd service
-exec slapd -h "ldap:/// ldaps:///" -d $OPENLDAP_DEBUG_LEVEL
+exec slapd -h "ldap:/// ldaps:///  ldapi:///" -d $OPENLDAP_DEBUG_LEVEL

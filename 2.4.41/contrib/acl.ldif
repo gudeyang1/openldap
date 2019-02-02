@@ -1,0 +1,5 @@
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {0}to attrs=userPassword by self write by dn.base="cn=Manager,dc=starwave,dc=local" write by anonymous auth by * none
+olcAccess: {1}to * by dn.base="cn=Manager,dc=starwave,dc=local" write by self write by * read
