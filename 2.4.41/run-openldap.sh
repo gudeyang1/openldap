@@ -64,14 +64,15 @@ if [ ! -f /etc/openldap/CONFIGURED ]; then
         ldapadd -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/configure_refint.ldif -d $OPENLDAP_DEBUG_LEVEL
 	# configure acl allow user change password
 	ldapmodify -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/acl.ldif -d $OPENLDAP_DEBUG_LEVEL
+	# configure ldap cert
+	ldapmodify -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/certs.ldif -d $OPENLDAP_DEBUG_LEVEL
 
-        # extract dc name from root DN suffix
-        dc_name=$(echo "${OPENLDAP_ROOT_DN_SUFFIX}" | grep -Po "(?<=^dc\=)[\w\d]+")
-        # create base organization object
-        sed -e "s OPENLDAP_SUFFIX ${OPENLDAP_ROOT_DN_SUFFIX} g" \
-            -e "s FIRST_PART ${dc_name} g" \
-            usr/local/etc/openldap/base.ldif |
-            ldapadd -x -D "$OPENLDAP_ROOT_DN_RREFIX,$OPENLDAP_ROOT_DN_SUFFIX" -w "$OPENLDAP_ROOT_PASSWORD"
+	#set password ploicy
+	ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=config" -f /etc/openldap/schema/ppolicy.ldif -d $OPENLDAP_DEBUG_LEVEL
+	ldapmodify -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/ppolicymodule.ldif  -d $OPENLDAP_DEBUG_LEVEL
+	ldapmodify -Y EXTERNAL -H ldapi:/// -f /usr/local/etc/openldap/ppolicyoverlay.ldif -d $OPENLDAP_DEBUG_LEVEL
+	#run the command after import data
+	#ldapadd -c -x -H ldap://localhost -D  "cn=Manager,dc=starwave,dc=local" -f /usr/local/etc/openldap/password-policy.ldif -w uESJ5sDyv2rzxkPp
 
         # stop the daemon
         pid=$(ps -A | grep slapd | awk '{print $1}')

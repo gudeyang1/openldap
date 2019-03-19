@@ -1,0 +1,7 @@
+dn: olcOverlay=ppolicy,olcDatabase={2}hdb,cn=config
+changeType: add
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: cn=default,ou=ppolicy,dc=starwave,dc=local
+olcPPolicyHashCleartext: TRUE
